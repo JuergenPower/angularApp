@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "name": "Angular Konzepte lernen",
+    "description": "Theoretischen Überblick über Angular und seine wichtigsten Konzepte verschaffen und dokumentieren."
+  },
+  {
+    "id": 2,
+    "name": "Urlaubsplanung",
+    "description": "Planung der nächsten Reise."
+  },
+  {
+    "id": 3,
+    "name": "Angular Lernprojekt",
+    "description": "Implementiere eine Angular Anwendung und lerne dabei die wichtigsten Angular Konzepte hands on."
+  },
+  {
+    "id": 4,
+    "name": "Java Theorie",
+    "description": "Die wichtigsten Aspekte von Java aufschreiben."
+  }
+]
