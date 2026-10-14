@@ -1,0 +1,32 @@
+.meadow {
+  background-color: #7cbb60;
+  border-radius: 12px;
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  grid-template-rows: repeat(10, minmax(0, 1fr));
+  width: 100%;
+}
+
+.redemption-progress {
+  background-color: #d9d9d9;
+  border-radius: 4px;
+  height: 12px;
+  max-width: 320px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.redemption-progress__fill {
+  animation-name: redemption-progress-fill;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+  background-color: #4caf50;
+  height: 100%;
+  width: 0;
+}
+
+@keyframes redemption-progress-fill {
+  to {
+    width: 100%;
+  }
+}

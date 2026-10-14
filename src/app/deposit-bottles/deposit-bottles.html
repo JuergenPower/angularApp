@@ -1,0 +1,33 @@
+<h1>Pfandflaschen sammeln</h1>
+<p>Gesammelte Flaschen: {{ bottleCount() }} / {{ bottleMaxCount() }}</p>
+<button
+  type="button"
+  [disabled]="isRedeeming()"
+  (click)="redeemBottles()"
+>
+  Pfand abholen
+</button>
+@if (isRedeeming()) {
+  <p role="status">Pfand wird abgeholt …</p>
+  <div class="redemption-progress" aria-hidden="true">
+    <div
+      class="redemption-progress__fill"
+      [style.animation-duration.ms]="redemptionDurationMs"
+    ></div>
+  </div>
+}
+<div
+  class="meadow"
+  [style.height.px]="meadowHeight"
+  [style.max-width.px]="meadowMaxWidth"
+>
+  <button
+    type="button"
+    [disabled]="isRedeeming() || bottleCount() >= bottleMaxCount()"
+    [style.grid-row]="buttonPosition().row"
+    [style.grid-column]="buttonPosition().column"
+    (click)="collectBottle()"
+  >
+    Flasche
+  </button>
+</div>
