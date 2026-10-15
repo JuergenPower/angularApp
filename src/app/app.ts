@@ -17,4 +17,12 @@ export class App {
   protected addMoney(amount: number): void {
     this.money.update(currentMoney => currentMoney + amount);
   }
+
+  protected spendMoney(amount: number): void {
+    if (amount <= 0 || amount > this.money()) {
+      return;
+    }
+
+    this.money.update(currentMoney => currentMoney - amount);
+  }
 }

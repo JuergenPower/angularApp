@@ -1,3 +1,7 @@
 <app-game-status [money]="money()" />
-<app-deposit-bottles (redeemed)="addMoney($event)" />
+<app-deposit-bottles
+  [money]="money()"
+  (redeemed)="addMoney($event)"
+  (purchaseRequested)="spendMoney($event)"
+/>
 <router-outlet />

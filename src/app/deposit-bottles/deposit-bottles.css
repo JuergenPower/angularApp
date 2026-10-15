@@ -7,6 +7,19 @@
   width: 100%;
 }
 
+.shop {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+  max-width: 640px;
+}
+
+.shop h3 {
+  flex-basis: 100%;
+  margin: 0;
+}
+
 .action-progress {
   background-color: #d9d9d9;
   border-radius: 4px;

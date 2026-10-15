@@ -1,4 +1,12 @@
-import { Component, output, signal } from '@angular/core';
+import { Component, input, output, signal } from '@angular/core';
+
+interface ShopOffer {
+  id: string;
+  name: string;
+  cost: number;
+  tooltip: string;
+  action: () => void;
+}
 
 @Component({
   imports: [],
@@ -7,17 +15,24 @@ import { Component, output, signal } from '@angular/core';
   templateUrl: './deposit-bottles.html',
 })
 export class DepositBottles {
+  readonly money = input.required<number>();
+  readonly purchaseRequested = output<number>();
   protected readonly bottleCount = signal(0);
   protected readonly bottleMaxCount = signal(2);
   protected readonly isBusy = signal(false);          // Indicates whether an action is currently in progress
   protected readonly activeAction = signal<'collecting' | 'redeeming' | null>(null);
   protected readonly activeActionDurationMs = signal(0);
-  protected readonly bottleCollectionDurationMs = 2000;
-  protected readonly redemptionDurationMs = 5000;
+  protected bottleCollectionDurationMs = 2000;
+  protected redemptionDurationMs = 5000;
   readonly redeemed = output<number>();
   protected readonly meadowHeight = 360;
   protected readonly meadowMaxWidth = 640;
   protected readonly buttonPosition = signal({ row: 5, column: 5 });
+  protected readonly shopOffers = signal<ShopOffer[]>([
+    { id: 'collection-tool', name: 'Sammelwerkzeug', cost: 10, tooltip: 'Ermöglicht das Sammeln von Flaschen effizienter', action: () => {this.bottleCollectionDurationMs = 400} },
+    { id: 'larger-bag', name: 'Tasche', cost: 5, tooltip: 'Ermöglicht das Sammeln von mehr Flaschen gleichzeitig', action: () => {this.bottleMaxCount.set(10)} },
+    { id: 'tretroller', name: 'Tretroller', cost: 30, tooltip: 'Ermöglicht schnelleres Pfand abholen', action: () => {this.redemptionDurationMs = 2000} }
+  ]);
 
   protected collectBottle(): void {
     if (this.bottleCount() >= this.bottleMaxCount()) {
@@ -51,12 +66,24 @@ export class DepositBottles {
   }
 
   protected redeemBottles(): void {
-    const amountEarned = this.bottleCount() * 0.25;
+    const amountEarned = this.bottleCount() * 25;
 
     this.runTimedAction(this.redemptionDurationMs, 'redeeming', () => {
       this.bottleCount.set(0);
       this.redeemed.emit(amountEarned);
     });
+  }
+
+  protected buyOffer(offer: ShopOffer): void {
+    if (this.money() < offer.cost) {
+      return;
+    }
+
+    this.shopOffers.update(offers =>
+      offers.filter(currentOffer => currentOffer.id !== offer.id),
+    );
+    this.purchaseRequested.emit(offer.cost);
+    offer.action();
   }
 
   private runTimedAction(
