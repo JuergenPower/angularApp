@@ -15,9 +15,17 @@ export class App {
   protected readonly title = signal('angular-app');
   protected readonly money = signal(0);
   protected readonly currentLevel = signal<GameLevel>('bottle-collector');
+  private readonly cashRegisterSound = new Audio('/sounds/cash-register.mp3');
 
   protected addMoney(amount: number): void {
     this.money.update(currentMoney => currentMoney + amount);
+
+    if (amount > 0) {
+      this.cashRegisterSound.currentTime = 0;
+      this.cashRegisterSound.play().catch((error: unknown) => {
+        console.error('Could not play the cash-register sound.', error);
+      });
+    }
   }
 
   protected spendMoney(amount: number): void {
