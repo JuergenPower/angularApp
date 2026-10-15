@@ -1,0 +1,6 @@
+.character-portrait {
+  display: block;
+  height: 240px;
+  image-rendering: pixelated;
+  width: auto;
+}

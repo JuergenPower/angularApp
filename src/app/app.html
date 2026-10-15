@@ -1,7 +1,9 @@
-<app-game-status [money]="money()" />
-<app-deposit-bottles
-  [money]="money()"
-  (redeemed)="addMoney($event)"
-  (purchaseRequested)="spendMoney($event)"
-/>
+<app-game-status [money]="money()" [level]="currentLevel()" />
+@if (currentLevel() === 'bottle-collector') {
+  <app-deposit-bottles
+    [money]="money()"
+    (redeemed)="addMoney($event)"
+    (purchaseRequested)="spendMoney($event)"
+  />
+}
 <router-outlet />

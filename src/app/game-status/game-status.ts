@@ -1,4 +1,5 @@
 import { Component, input } from '@angular/core';
+import type { GameLevel } from '../game-level';
 
 @Component({
   imports: [],
@@ -8,4 +9,5 @@ import { Component, input } from '@angular/core';
 })
 export class GameStatus {
   readonly money = input.required<number>();
+  readonly level = input.required<GameLevel>();
 }
