@@ -1,6 +1,72 @@
+.status-content {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  width: max-content;
+}
+
+.portrait-container {
+  display: flex;
+  justify-content: center;
+}
+
+.portrait-frame {
+  box-sizing: border-box;
+  background-color: #f2e7c8;
+  border: 8px solid #774f17;
+  display: inline-block;
+  max-width: 100%;
+  padding: 4px;
+}
+
 .character-portrait {
   display: block;
-  height: 240px;
+  height: auto;
   image-rendering: pixelated;
+  max-height: 240px;
+  max-width: 100%;
   width: auto;
+}
+
+.game-status-table {
+  align-self: stretch;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+.game-status-table col {
+  width: 50%;
+}
+
+.game-status-table th,
+.game-status-table td {
+  border: 4px solid #774f17;
+  padding: 4px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.game-status-table th {
+  font-weight: normal;
+}
+
+.game-status-table td {
+  text-align: left;
+}
+
+.money-value {
+  font-size: 16px;
+  font-weight: 700;
+  transition: background-color 150ms ease;
+}
+
+.money-increased {
+  background-color: #fdf91c;
+}
+
+.money-icon {
+  height: 32px;
+  image-rendering: pixelated;
+  object-fit: contain;
+  width: 32px;
 }

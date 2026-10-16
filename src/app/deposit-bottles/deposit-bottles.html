@@ -1,6 +1,7 @@
 <h2>Pfandflaschen sammeln</h2>
 <p>Gesammelte Flaschen: {{ bottleCount() }} / {{ bottleMaxCount() }}</p>
 <button
+  class="pixel-button"
   type="button"
   [disabled]="isBusy()"
   (click)="redeemBottles()"
@@ -15,12 +16,13 @@
 >
   <button
     type="button"
+    aria-label="Flasche sammeln"
     [disabled]="isBusy() || bottleCount() >= bottleMaxCount()"
     [style.grid-row]="buttonPosition().row"
     [style.grid-column]="buttonPosition().column"
     (click)="collectBottle()"
   >
-    Flasche
+    <img src="/images/bottle.png" alt="" />
   </button>
 </div>
 
@@ -28,6 +30,7 @@
   <h3 id="shop-heading">Shop</h3>
   @for (offer of shopOffers(); track offer.id) {
     <button
+      class="pixel-button"
       type="button"
       [disabled]="money() < offer.cost"
       (click)="buyOffer(offer)"

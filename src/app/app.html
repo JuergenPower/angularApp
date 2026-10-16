@@ -1,9 +1,16 @@
-<app-game-status [money]="money()" [level]="currentLevel()" />
-@if (currentLevel() === 'bottle-collector') {
-  <app-deposit-bottles
-    [money]="money()"
-    (redeemed)="addMoney($event)"
-    (purchaseRequested)="spendMoney($event)"
-  />
-}
-<router-outlet />
+<div class="game-layout">
+  <aside class="game-sidebar" aria-label="Spielstatus">
+    <app-game-status [money]="money()" [level]="currentLevel()" />
+  </aside>
+
+  <main class="game-level">
+    @if (currentLevel() === 'bottle-collector') {
+      <app-deposit-bottles
+        [money]="money()"
+        (redeemed)="addMoney($event)"
+        (purchaseRequested)="spendMoney($event)"
+      />
+    }
+    <router-outlet />
+  </main>
+</div>

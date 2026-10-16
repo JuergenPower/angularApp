@@ -1,10 +1,79 @@
+:host {
+  display: block;
+  padding-left: 12px;
+}
+
 .meadow {
-  background-color: #7cbb60;
+  background-image: url('/images/meadow.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
   border-radius: 12px;
   display: grid;
+  image-rendering: pixelated;
   grid-template-columns: repeat(10, minmax(0, 1fr));
   grid-template-rows: repeat(10, minmax(0, 1fr));
+  margin-top: 12px;
   width: 100%;
+}
+
+.meadow button {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  display: grid;
+  padding: 0;
+  place-items: center;
+}
+
+.meadow button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.meadow button:focus-visible {
+  outline: 2px solid #34271d;
+  outline-offset: 2px;
+}
+
+.meadow button img {
+  display: block;
+  image-rendering: pixelated;
+}
+
+.pixel-button {
+  background-color: #e1b85a;
+  border: 3px solid #774f17;
+  border-radius: 0;
+  box-shadow: 3px 3px 0 #4f371d;
+  color: #332515;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 8px 12px;
+}
+
+.pixel-button:hover:not(:disabled) {
+  background-color: #f0cc6a;
+}
+
+.pixel-button:active:not(:disabled) {
+  box-shadow: 1px 1px 0 #4f371d;
+  transform: translate(2px, 2px);
+}
+
+.pixel-button:disabled {
+  background-color: #d7cfbc;
+  border-color: #8d8066;
+  box-shadow: 3px 3px 0 #8d8066;
+  color: #706653;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.pixel-button:focus-visible {
+  outline: 2px solid #34271d;
+  outline-offset: 4px;
 }
 
 .shop {

@@ -1,10 +1,34 @@
-@switch (level()) {
-  @case ('bottle-collector') {
-    <img
-      class="character-portrait"
-      src="/images/scruffy-drifter-with-bottle.png"
-      alt="Pfandflaschensammler mit Flasche"
-    />
+<div class="status-content">
+  @switch (level()) {
+    @case ('bottle-collector') {
+      <div class="portrait-container">
+        <div class="portrait-frame">
+          <img
+            class="character-portrait"
+            src="/images/scruffy-drifter-with-bottle.png"
+            alt="Pfandflaschensammler mit Flasche"
+          />
+        </div>
+      </div>
+    }
   }
-}
-<p>Geld: {{ money() }} €</p>
+  <table class="game-status-table" aria-label="Spielgeld">
+    <colgroup>
+      <col />
+      <col />
+    </colgroup>
+    <tbody>
+      <tr>
+        <th scope="row">
+          <img class="money-icon" src="/images/money-sack.png" alt="Geld" />
+        </th>
+        <td
+          class="money-value"
+          [class.money-increased]="moneyIncreased()"
+        >
+          {{ money() }} €
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

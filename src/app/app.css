@@ -1,0 +1,26 @@
+.game-layout {
+  background-color: #d8c28d;
+  box-sizing: border-box;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: max-content minmax(0, 1fr);
+  min-height: 100vh;
+  padding: 12px;
+}
+
+.game-sidebar {
+  background-color: #f3e9d0;
+  min-width: 0;
+}
+
+.game-level {
+  background-color: #f3e9d0;
+  min-width: 0;
+}
+
+@media (max-width: 700px) {
+  .game-layout {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 12px;
+  }
+}
