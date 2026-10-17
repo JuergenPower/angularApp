@@ -11,7 +11,7 @@ interface ShopOffer {
 @Component({
   imports: [],
   selector: 'app-level-3',
-  styleUrl: './level-3.css',
+  styleUrl: '../shared/level-common.css',
   templateUrl: './level-3.html',
 })
 export class Level3 {
