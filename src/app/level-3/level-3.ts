@@ -10,11 +10,11 @@ interface ShopOffer {
 
 @Component({
   imports: [],
-  selector: 'app-deposit-bottles',
-  styleUrl: './deposit-bottles.css',
-  templateUrl: './deposit-bottles.html',
+  selector: 'app-level-3',
+  styleUrl: './level-3.css',
+  templateUrl: './level-3.html',
 })
-export class DepositBottles {
+export class Level3 {
   readonly money = input.required<number>();
   readonly purchaseRequested = output<number>();
   protected readonly bottleCount = signal(0);
@@ -29,9 +29,12 @@ export class DepositBottles {
   protected readonly meadowMaxWidth = 640;
   protected readonly buttonPosition = signal({ row: 5, column: 5 });
   protected readonly shopOffers = signal<ShopOffer[]>([
-    { id: 'collection-tool', name: 'Sammelwerkzeug', cost: 10, tooltip: 'Ermöglicht das Sammeln von Flaschen effizienter', action: () => {this.bottleCollectionDurationMs = 400} },
-    { id: 'larger-bag', name: 'Tasche', cost: 5, tooltip: 'Ermöglicht das Sammeln von mehr Flaschen gleichzeitig', action: () => {this.bottleMaxCount.set(10)} },
-    { id: 'tretroller', name: 'Tretroller', cost: 30, tooltip: 'Ermöglicht schnelleres Pfand abholen', action: () => {this.redemptionDurationMs = 2000} }
+    { id: 'greifzange', name: 'Greifzange', cost: 10, tooltip: '50% schnelleres Flaschen sammeln', action: () => {this.bottleCollectionDurationMs /= 2} },
+    { id: 'tasche', name: 'Tasche', cost: 5, tooltip: '+100% Flaschenkapazität', action: () => {this.bottleMaxCount.set(this.bottleMaxCount() * 2)} },
+    { id: 'tretroller', name: 'Tretroller', cost: 30, tooltip: '50% schnelleres Pfand abholen', action: () => {this.redemptionDurationMs /= 2} },
+    { id: 'schuhe', name: 'Schuhe', cost: 20, tooltip: '50% schnelleres Pfand abholen', action: () => {this.redemptionDurationMs /= 2} },
+    { id: 'handschuhe', name: 'Handschuhe', cost: 5, tooltip: '50% schnelleres Flaschen sammeln', action: () => {this.bottleCollectionDurationMs /= 2} },
+    { id: 'rucksack', name: 'Rucksack', cost: 15, tooltip: '+100% Flaschenkapazität', action: () => {this.bottleMaxCount.set(this.bottleMaxCount() * 2)} },
   ]);
 
   protected collectBottle(): void {
@@ -66,7 +69,7 @@ export class DepositBottles {
   }
 
   protected redeemBottles(): void {
-    const amountEarned = this.bottleCount() * 25;
+    const amountEarned = this.bottleCount() * 2;
 
     this.runTimedAction(this.redemptionDurationMs, 'redeeming', () => {
       this.bottleCount.set(0);

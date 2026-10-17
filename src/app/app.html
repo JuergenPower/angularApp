@@ -4,8 +4,8 @@
   </aside>
 
   <main class="game-level">
-    @if (currentLevel() === 'bottle-collector') {
-      <app-deposit-bottles
+    @if (currentLevel() === 'level-3') {
+      <app-level-3
         [money]="money()"
         (redeemed)="addMoney($event)"
         (purchaseRequested)="spendMoney($event)"

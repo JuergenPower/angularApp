@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DepositBottles } from './deposit-bottles';
+import { Level3 } from './level-3';
 
-describe('DepositBottles', () => {
-  let component: DepositBottles;
-  let fixture: ComponentFixture<DepositBottles>;
+describe('Level3', () => {
+  let component: Level3;
+  let fixture: ComponentFixture<Level3>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DepositBottles],
+      imports: [Level3],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(DepositBottles);
+    fixture = TestBed.createComponent(Level3);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

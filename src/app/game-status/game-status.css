@@ -55,7 +55,7 @@
 }
 
 .money-value {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   transition: background-color 150ms ease;
 }
@@ -65,8 +65,8 @@
 }
 
 .money-icon {
-  height: 32px;
+  height: 48px;
   image-rendering: pixelated;
   object-fit: contain;
-  width: 32px;
+  width: 48px;
 }

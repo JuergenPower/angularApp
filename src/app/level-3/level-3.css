@@ -4,7 +4,8 @@
 }
 
 .meadow {
-  background-image: url('/images/meadow.png');
+  background-color: transparent;
+  background-image: url('/images/meadow-nice.png');
   background-position: center;
   background-repeat: no-repeat;
   background-size: 100% 100%;

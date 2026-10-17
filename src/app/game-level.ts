@@ -1,1 +1,1 @@
-export type GameLevel = 'bottle-collector';
+export type GameLevel = 'level-1' | 'level-2' | 'level-3';
