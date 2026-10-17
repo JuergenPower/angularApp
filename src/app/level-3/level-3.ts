@@ -24,7 +24,7 @@ export class Level3 {
   protected readonly activeActionDurationMs = signal(0);
   protected bottleCollectionDurationMs = 2000;
   protected redemptionDurationMs = 5000;
-  readonly redeemed = output<number>();
+  readonly earnMoney = output<number>();
   protected readonly meadowHeight = 360;
   protected readonly meadowMaxWidth = 640;
   protected readonly buttonPosition = signal({ row: 5, column: 5 });
@@ -73,7 +73,7 @@ export class Level3 {
 
     this.runTimedAction(this.redemptionDurationMs, 'redeeming', () => {
       this.bottleCount.set(0);
-      this.redeemed.emit(amountEarned);
+      this.earnMoney.emit(amountEarned);
     });
   }
 

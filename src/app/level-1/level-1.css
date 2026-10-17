@@ -1,0 +1,20 @@
+.production-table {
+  border-collapse: collapse;
+  margin-top: 12px;
+  max-width: 640px;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.production-table th,
+.production-table td {
+  border: 2px solid #774f17;
+  padding: 8px;
+  text-align: left;
+  vertical-align: middle;
+  width: 50%;
+}
+
+.production-table th {
+  font-weight: 700;
+}

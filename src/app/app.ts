@@ -1,12 +1,13 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { Level1 } from './level-1/level-1';
 import { Level3 } from './level-3/level-3';
 import { GameStatus } from './game-status/game-status';
 import { GameLevel } from './game-level';
 
 
 @Component({
-  imports: [RouterOutlet, Level3, GameStatus],
+  imports: [RouterOutlet, Level1, Level3, GameStatus],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
@@ -14,7 +15,7 @@ import { GameLevel } from './game-level';
 export class App {
   protected readonly title = signal('angular-app');
   protected readonly money = signal(0);
-  protected readonly currentLevel = signal<GameLevel>('level-3');
+  protected readonly currentLevel = signal<GameLevel>('level-1');
   private readonly cashRegisterSound = new Audio('/sounds/cash-register.mp3');
 
   protected addMoney(amount: number): void {

@@ -4,10 +4,16 @@
   </aside>
 
   <main class="game-level">
-    @if (currentLevel() === 'level-3') {
+    @if (currentLevel() === 'level-1') {
+      <app-level-1
+        [money]="money()"
+        (earnMoney)="addMoney($event)"
+        (purchaseRequested)="spendMoney($event)"
+      />
+    } @else if (currentLevel() === 'level-3') {
       <app-level-3
         [money]="money()"
-        (redeemed)="addMoney($event)"
+        (earnMoney)="addMoney($event)"
         (purchaseRequested)="spendMoney($event)"
       />
     }
