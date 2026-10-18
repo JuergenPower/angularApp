@@ -1,6 +1,11 @@
 <div class="game-layout">
   <aside class="game-sidebar" aria-label="Spielstatus">
-    <app-game-status [money]="money()" [level]="currentLevel()" />
+    <app-game-status
+      [money]="money()"
+      [level]="currentLevel()"
+      [levelOptions]="unlockedLevels()"
+      (levelChange)="currentLevel.set($event)"
+    />
   </aside>
 
   <main class="game-level">
@@ -9,7 +14,10 @@
         [money]="money()"
         (earnMoney)="addMoney($event)"
         (purchaseRequested)="spendMoney($event)"
+        (unlockLevel)="unlockLevel($event)"
       />
+    } @else if (currentLevel() === 'level-2') {
+      <p>Level 2 ist freigeschaltet und wird bald spielbar.</p>
     } @else if (currentLevel() === 'level-3') {
       <app-level-3
         [money]="money()"

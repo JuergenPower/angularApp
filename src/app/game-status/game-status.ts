@@ -1,5 +1,5 @@
-import { Component, effect, input, signal } from '@angular/core';
-import type { GameLevel } from '../game-level';
+import { Component, effect, input, output, signal } from '@angular/core';
+import type { GameLevel, GameLevelOption } from '../game-level';
 
 @Component({
   imports: [],
@@ -10,8 +10,24 @@ import type { GameLevel } from '../game-level';
 export class GameStatus {
   readonly money = input.required<number>();
   readonly level = input.required<GameLevel>();
+  readonly levelOptions = input.required<readonly GameLevelOption[]>();
+  readonly levelChange = output<GameLevel>();
   protected readonly moneyIncreased = signal(false);
   private previousMoney: number | undefined;
+
+  protected changeLevel(event: Event): void {
+    const target = event.target;
+    if (!(target instanceof HTMLSelectElement)) {
+      return;
+    }
+    const selectedLevel = target.value;
+    const selectedOption = this.levelOptions().find(
+      option => option.value === selectedLevel,
+    );
+    if (selectedOption) {
+      this.levelChange.emit(selectedOption.value);
+    }
+  }
 
   constructor() {
     effect(onCleanup => {

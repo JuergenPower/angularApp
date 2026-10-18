@@ -1,9 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Level1 } from './level-1/level-1';
 import { Level3 } from './level-3/level-3';
 import { GameStatus } from './game-status/game-status';
-import { GameLevel } from './game-level';
+import { GAME_LEVELS, type GameLevel } from './game-level';
 
 
 @Component({
@@ -15,6 +15,10 @@ import { GameLevel } from './game-level';
 export class App {
   protected readonly title = signal('angular-app');
   protected readonly money = signal(0);
+  protected readonly numberOfUnlockedLevels = signal(1);
+  protected readonly unlockedLevels = computed(() =>
+    GAME_LEVELS.slice(0, this.numberOfUnlockedLevels()),
+  );
   protected readonly currentLevel = signal<GameLevel>('level-1');
   private readonly cashRegisterSound = new Audio('/sounds/cash-register.mp3');
 
@@ -35,6 +39,16 @@ export class App {
     }
 
     this.money.update(currentMoney => this.roundMoney(currentMoney - amount));
+  }
+
+  protected unlockLevel(levelNumber: number): void {
+    if (
+      Number.isInteger(levelNumber) &&
+      levelNumber > this.numberOfUnlockedLevels() &&
+      levelNumber <= GAME_LEVELS.length
+    ) {
+      this.numberOfUnlockedLevels.set(levelNumber);
+    }
   }
 
   private roundMoney(amount: number): number {

@@ -8,11 +8,27 @@
       />
     </div>
   </div>
-  <table class="game-status-table" aria-label="Spielgeld">
+  <table class="game-status-table" aria-label="Spielstatus">
     <colgroup>
       <col />
       <col />
     </colgroup>
+    <tbody>
+      <tr>
+        <th scope="row">Level:</th>
+        <td>
+          <select
+            aria-label="Level"
+            [value]="level()"
+            (change)="changeLevel($event)"
+          >
+            @for (option of levelOptions(); track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        </td>
+      </tr>
+    </tbody>
     <tbody>
       <tr>
         <th scope="row">

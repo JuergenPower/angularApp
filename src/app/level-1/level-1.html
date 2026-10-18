@@ -1,5 +1,10 @@
 <h2>Level 1: Zigarettenstummel sammeln</h2>
 <p>Gesammelte Stummel: {{ buttCount() }} / {{ buttMaxCount() }}</p>
+@if (jacketOwned()) {
+  <button class="pixel-button" type="button" (click)="unlockNextLevel()">
+    Level 2 freischalten
+  </button>
+}
 @if (!quitSmoking()) {
   <button
     class="pixel-button"

@@ -20,14 +20,21 @@ interface ShopOffer {
 export class Level1 {
   readonly money = input.required<number>();
   readonly purchaseRequested = output<number>();
+  readonly earnMoney = output<number>();
+  readonly unlockLevel = output<number>();
   protected readonly buttCount = signal(0);
   protected readonly buttMaxCount = signal(3);
   protected readonly tobaccoResiduesCount = signal(0);
   protected readonly tobaccoResiduesMaxCount = signal(3);
   protected readonly cigarettesCount = signal(0);
-  protected readonly rollingEnabled = signal(false);
+
+  // Preconditions
   protected readonly enableQuitSmoking = signal(false);
   protected readonly quitSmoking = signal(false);
+  protected readonly numberOfOptimizations = signal(0);
+  protected readonly rollingEnabled = signal(false);
+  protected readonly jacketOwned = signal(false);
+
 
   protected readonly isBusy = signal(false);
   protected readonly activeAction = signal<ActiveAction | null>(null);
@@ -36,32 +43,26 @@ export class Level1 {
   protected extractingDurationMs = 5000;
   protected sellStuffDurationMs = 8000;
   protected rollingDurationMs = 8000;
-  protected readonly tobaccoResiduePrice = 0.1;
-  protected readonly cigarettePrice = 0.3;
 
-  readonly earnMoney = output<number>();
+  protected readonly devSellPriceMultiplier: number = 1;
+  protected readonly tobaccoResiduePrice = this.devSellPriceMultiplier * 0.1;
+  protected  cigarettePrice = this.devSellPriceMultiplier * 0.3;
+
+  
   protected readonly meadowHeight = 360;
   protected readonly meadowMaxWidth = 640;
   protected readonly buttonPosition = signal({ row: 5, column: 5 });
+
+  // Shop offers available in this level
   protected readonly shopOffers = signal<ShopOffer[]>([
     {
       visible: () => this.enableQuitSmoking(),
       id: 'quit-smoking',
       name: 'Mit dem Rauchen aufhören',
       cost: 0,
-      tooltip: 'Idee: Mit dem Rauchen aufhören',
+      tooltip: 'Idee: Vielleicht könnte man etwas anderes mit den Stummeln machen',
       action: () => {
         this.quitSmoking.set(true);
-      },
-    },
-    {
-      visible: () => this.quitSmoking(),
-      id: 'stummel-greifzange',
-      name: 'Stummel-Greifzange',
-      cost: 10,
-      tooltip: '50% schnelleres Stummel sammeln',
-      action: () => {
-        this.buttCollectionDurationMs /= 2;
       },
     },
     {
@@ -72,13 +73,80 @@ export class Level1 {
       tooltip: '+ 2 Stummel Tragekapazität',
       action: () => {
         this.buttMaxCount.set(this.buttMaxCount() + 2);
+        this.numberOfOptimizations.set(this.numberOfOptimizations() + 1);
       },
     },
     {
       visible: () => this.quitSmoking(),
+      id: 'plastic-zipper',
+      name: 'Plastikzipper',
+      cost: 1.0,
+      tooltip: '+ 1 Tabakreste Tragekapazität',
+      action: () => {
+        this.tobaccoResiduesMaxCount.set(this.tobaccoResiduesMaxCount() + 1);
+        this.numberOfOptimizations.set(this.numberOfOptimizations() + 1);
+      },
+    },
+    {
+      visible: () => this.quitSmoking(),
+      id: 'newspaper-knee-pads',
+      name: 'Zeitungs-Kniepolster',
+      cost: 1.5,
+      tooltip: '50 % schnelleres Sammeln von Stummeln',
+      action: () => {
+        this.buttCollectionDurationMs /= 2;
+        this.numberOfOptimizations.set(this.numberOfOptimizations() + 1);
+      },
+    },
+    {
+      visible: () => this.quitSmoking(),
+      id: 'stummel-ritzer',
+      name: 'Stummelritzer',
+      cost: 2,
+      tooltip: '50 % schnelleres Tabak rausholen',
+      action: () => {
+        this.extractingDurationMs /= 2;
+        this.numberOfOptimizations.set(this.numberOfOptimizations() + 1);
+      },
+    },
+    {
+      visible: () => this.quitSmoking(),
+      id: 'tobacco-sieve',
+      name: 'Tabaksieb',
+      cost: 2.5,
+      tooltip: '50 % schnelleres Verkaufen',
+      action: () => {
+        this.sellStuffDurationMs /= 2;
+        this.numberOfOptimizations.set(this.numberOfOptimizations() + 1);
+      },
+    },
+    {
+      visible: () => this.quitSmoking(),
+      id: 'small-bowl',
+      name: 'Kleine Schale',
+      cost: 2,
+      tooltip: '+ 2 Stummel Tragekapazität',
+      action: () => {
+        this.buttMaxCount.set(this.buttMaxCount() + 2);
+        this.numberOfOptimizations.set(this.numberOfOptimizations() + 1);
+      },
+    },
+    {
+      visible: () => this.quitSmoking(),
+      id: 'small-bag',
+      name: 'Kleiner Beutel',
+      cost: 1.5,
+      tooltip: '+ 1 Tabakreste Tragekapazität',
+      action: () => {
+        this.tobaccoResiduesMaxCount.set(this.tobaccoResiduesMaxCount() + 1);
+        this.numberOfOptimizations.set(this.numberOfOptimizations() + 1);
+      },
+    },
+    {
+      visible: () => this.numberOfOptimizations() >= 7,
       id: 'papers',
       name: 'Papers',
-      cost: 2,
+      cost: 4,
       tooltip: 'Ermöglicht das Rollen von Zigaretten',
       action: () => {
         this.rollingEnabled.set(true);
@@ -86,12 +154,111 @@ export class Level1 {
     },
     {
       visible: () => this.rollingEnabled(),
+      id: 'butt-bowl',
+      name: 'Stummelschale',
+      cost: 3,
+      tooltip: '+ 2 Stummel Tragekapazität',
+      action: () => {
+        this.buttMaxCount.set(this.buttMaxCount() + 2);
+        this.numberOfOptimizations.set(this.numberOfOptimizations() + 1);
+      },
+    },
+    {
+      visible: () => this.rollingEnabled(),
+      id: 'jute-bag',
+      name: 'Jutebeutel',
+      cost: 2.5,
+      tooltip: '+ 1 Tabakreste Tragekapazität',
+      action: () => {
+        this.tobaccoResiduesMaxCount.set(this.tobaccoResiduesMaxCount() + 1);
+        this.numberOfOptimizations.set(this.numberOfOptimizations() + 1);
+      },
+    },
+    {
+      visible: () => this.rollingEnabled(),
+      id: 'sales-book',
+      name: 'Buch: Verkaufstaktiken',
+      cost: 4,
+      tooltip: '50 % schnelleres Verkaufen',
+      action: () => {
+        this.sellStuffDurationMs /= 2;
+        this.numberOfOptimizations.set(this.numberOfOptimizations() + 1);
+      },
+    },
+    {
+      visible: () => this.rollingEnabled(),
       id: 'rolling-machine',
       name: 'Drehmaschine',
-      cost: 20,
+      cost: 5,
       tooltip: '50 % schnelleres Zigarettenrollen',
       action: () => {
         this.rollingDurationMs /= 2;
+        this.numberOfOptimizations.set(this.numberOfOptimizations() + 1);
+      },
+    },
+    {
+      visible: () => this.rollingEnabled(),
+      id: 'filters',
+      name: 'Filter',
+      cost: 3,
+      tooltip: 'Filterzigaretten rollen: + 0.1 € pro Zigarette',
+      action: () => {
+        this.cigarettePrice += 0.1;
+        this.numberOfOptimizations.set(this.numberOfOptimizations() + 1);
+      },
+    },
+    {
+      visible: () => this.rollingEnabled(),
+      id: 'cushion-knee-pads',
+      name: 'Kissen-Kniepolster',
+      cost: 4,
+      tooltip: '50 % schnelleres Sammeln von Stummeln',
+      action: () => {
+        this.buttCollectionDurationMs /= 2;
+        this.numberOfOptimizations.set(this.numberOfOptimizations() + 1);
+      },
+    },
+    {
+      visible: () => this.rollingEnabled(),
+      id: 'tobacco-extractor',
+      name: 'Tabak-Extractor',
+      cost: 3.5,
+      tooltip: '50 % schnelleres Tabak rausholen',
+      action: () => {
+        this.extractingDurationMs /= 2;
+        this.numberOfOptimizations.set(this.numberOfOptimizations() + 1);
+      },
+    },
+    {
+      visible: () => this.rollingEnabled(),
+      id: 'butt-box',
+      name: 'Stummelbox',
+      cost: 4,
+      tooltip: '+ 2 Stummel Tragekapazität',
+      action: () => {
+        this.buttMaxCount.set(this.buttMaxCount() + 2);
+        this.numberOfOptimizations.set(this.numberOfOptimizations() + 1);
+      },
+    },
+    {
+      visible: () => this.rollingEnabled(),
+      id: 'tobacco-bag',
+      name: 'Tabakbeutel',
+      cost: 3,
+      tooltip: '+ 1 Tabakreste Tragekapazität',
+      action: () => {
+        this.tobaccoResiduesMaxCount.set(this.tobaccoResiduesMaxCount() + 1);
+        this.numberOfOptimizations.set(this.numberOfOptimizations() + 1);
+      },
+    },
+    {
+      visible: () => this.numberOfOptimizations() >= 16,
+      id: 'used-jacket',
+      name: 'Gebrauchtes Jackett',
+      cost: 10,
+      tooltip: 'Style upgrade: Eröffnet neue Möglichkeiten',
+      action: () => {
+        this.jacketOwned.set(true);
       },
     },
   ]);
@@ -198,6 +365,12 @@ export class Level1 {
     );
     this.purchaseRequested.emit(offer.cost);
     offer.action();
+  }
+
+  protected unlockNextLevel(): void {
+    if (this.jacketOwned()) {
+      this.unlockLevel.emit(2);
+    }
   }
 
   private runTimedAction(
