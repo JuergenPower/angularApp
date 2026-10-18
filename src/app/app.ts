@@ -19,7 +19,7 @@ export class App {
   private readonly cashRegisterSound = new Audio('/sounds/cash-register.mp3');
 
   protected addMoney(amount: number): void {
-    this.money.update(currentMoney => currentMoney + amount);
+    this.money.update(currentMoney => this.roundMoney(currentMoney + amount));
 
     if (amount > 0) {
       this.cashRegisterSound.currentTime = 0;
@@ -34,6 +34,11 @@ export class App {
       return;
     }
 
-    this.money.update(currentMoney => currentMoney - amount);
+    this.money.update(currentMoney => this.roundMoney(currentMoney - amount));
+  }
+
+  private roundMoney(amount: number): number {
+    // Keep the stored balance accurate to cents despite floating-point precision.
+    return Math.round((amount + Number.EPSILON) * 100) / 100;
   }
 }

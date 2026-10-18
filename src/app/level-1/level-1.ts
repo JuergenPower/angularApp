@@ -1,7 +1,9 @@
 import { Component, input, output, signal } from '@angular/core';
 
+type ActiveAction = 'collecting' | 'extracting' | 'rolling' | 'selling' | 'smoking';
+
 interface ShopOffer {
-  visible: boolean;
+  visible: () => boolean;
   id: string;
   name: string;
   cost: number;
@@ -24,13 +26,11 @@ export class Level1 {
   protected readonly tobaccoResiduesMaxCount = signal(3);
   protected readonly cigarettesCount = signal(0);
   protected readonly rollingEnabled = signal(false);
-
-
+  protected readonly enableQuitSmoking = signal(false);
+  protected readonly quitSmoking = signal(false);
 
   protected readonly isBusy = signal(false);
-  protected readonly activeAction = signal<'collecting' | 'extracting' | 'rolling' | 'selling' | null>(
-    null,
-  );
+  protected readonly activeAction = signal<ActiveAction | null>(null);
   protected readonly activeActionDurationMs = signal(0);
   protected buttCollectionDurationMs = 2000;
   protected extractingDurationMs = 5000;
@@ -45,7 +45,17 @@ export class Level1 {
   protected readonly buttonPosition = signal({ row: 5, column: 5 });
   protected readonly shopOffers = signal<ShopOffer[]>([
     {
-      visible: true,
+      visible: () => this.enableQuitSmoking(),
+      id: 'quit-smoking',
+      name: 'Mit dem Rauchen aufhören',
+      cost: 0,
+      tooltip: 'Idee: Mit dem Rauchen aufhören',
+      action: () => {
+        this.quitSmoking.set(true);
+      },
+    },
+    {
+      visible: () => this.quitSmoking(),
       id: 'stummel-greifzange',
       name: 'Stummel-Greifzange',
       cost: 10,
@@ -55,9 +65,9 @@ export class Level1 {
       },
     },
     {
-      visible: true,
-      id: 'bierdeckel',
-      name: 'Bierdeckel',
+      visible: () => this.quitSmoking(),
+      id: 'kronkorken',
+      name: 'Kronkorken',
       cost: 0.5,
       tooltip: '+ 2 Stummel Tragekapazität',
       action: () => {
@@ -65,7 +75,7 @@ export class Level1 {
       },
     },
     {
-      visible: true,
+      visible: () => this.quitSmoking(),
       id: 'papers',
       name: 'Papers',
       cost: 2,
@@ -75,7 +85,7 @@ export class Level1 {
       },
     },
     {
-      visible: this.rollingEnabled(),
+      visible: () => this.rollingEnabled(),
       id: 'rolling-machine',
       name: 'Drehmaschine',
       cost: 20,
@@ -115,6 +125,17 @@ export class Level1 {
         });
       },
     );
+  }
+
+  protected smoke(): void {
+    if (this.buttCount() < 1 || this.isBusy()) {
+      return;
+    }
+
+    this.runTimedAction(5000, 'smoking', () => {
+      this.buttCount.update(count => count - 1);
+      this.enableQuitSmoking.set(true);
+    });
   }
 
   protected extractTobacco(): void {
@@ -181,7 +202,7 @@ export class Level1 {
 
   private runTimedAction(
     durationMs: number,
-    action: 'collecting' | 'extracting' | 'rolling' | 'selling',
+    action: ActiveAction,
     onComplete: () => void,
   ): void {
     if (this.isBusy()) {
