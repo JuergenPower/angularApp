@@ -22,11 +22,10 @@
   <button
     type="button"
     aria-label="Flasche sammeln"
-    [disabled]="isBusy() || bottleCount() >= bottleMaxCount() || bottleCount() < 1"
+    [disabled]="isBusy() || bottleCount() >= bottleMaxCount()"
     [style.grid-row]="buttonPosition().row"
     [style.grid-column]="buttonPosition().column"
-    (click)="collectBottle()"
-  >
+    (click)="collectBottle()">
     <img src="/images/bottle.png" alt="" />
   </button>
 </div>

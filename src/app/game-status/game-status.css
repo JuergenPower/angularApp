@@ -65,8 +65,7 @@
 }
 
 .money-icon {
-  height: 48px;
   image-rendering: pixelated;
   object-fit: contain;
-  width: 48px;
+  width: 70px;
 }

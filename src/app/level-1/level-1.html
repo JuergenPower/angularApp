@@ -3,7 +3,7 @@
 <table class="production-table" aria-label="Tabak- und Zigarettenproduktion">
   <tbody>
     <tr>
-      <th scope="col">Tabakreste: {{ tobaccoResiduesCount() }}</th>
+      <th scope="col">Tabakreste: {{ tobaccoResiduesCount() }} / {{ tobaccoResiduesMaxCount() }}</th>
       @if (rollingEnabled()) {
         <th scope="col">Zigaretten: {{ cigarettesCount() }}</th>
       }
@@ -15,13 +15,20 @@
           type="button"
           [disabled]="isBusy() || buttCount() < 1"
           (click)="extractTobacco()"
-        >
+          title="Macht aus je 2 Stummeln 1 Tabakrest">
           Tabak rausholen
         </button>
       </td>
       @if (rollingEnabled()) {
         <td>
-          <button class="pixel-button" type="button" disabled>Rollen</button>
+          <button 
+            class="pixel-button" 
+            type="button" 
+            [disabled]="isBusy() || tobaccoResiduesCount() < 1"
+            title="Macht aus je 2 Tabakreste 1 Zigarette"
+            (click)="rollCigaretts()">
+            Rollen
+          </button>
         </td>
       }
     </tr>
@@ -30,15 +37,19 @@
         <button
           class="pixel-button"
           type="button"
-          [disabled]="isBusy() || tobaccoResiduesCount() < 1"
+          [disabled]="isBusy() || tobaccoResiduesCount() < 1 || tobaccoResiduesCount() >= tobaccoResiduesMaxCount()"
           (click)="sellTobacco()"
-        >
+          title="Verkauft alle Tabakreste">
           Tabak verkaufen
         </button>
       </td>
       @if (rollingEnabled()) {
         <td>
-          <button class="pixel-button" type="button" disabled>
+          <button 
+            class="pixel-button" 
+            type="button" 
+            [disabled]="isBusy() || cigarettesCount() < 1"
+            (click)="sellCigarettes()">
             Zigaretten verkaufen
           </button>
         </td>
@@ -50,8 +61,7 @@
 <div
   class="meadow"
   [style.height.px]="meadowHeight"
-  [style.max-width.px]="meadowMaxWidth"
->
+  [style.max-width.px]="meadowMaxWidth">
   <img class="meadow-background" src="/images/meadow-nasty.png" alt="" />
   <button
     type="button"
@@ -59,8 +69,7 @@
     [disabled]="isBusy() || buttCount() >= buttMaxCount()"
     [style.grid-row]="buttonPosition().row"
     [style.grid-column]="buttonPosition().column"
-    (click)="collectButt()"
-  >
+    (click)="collectButt()">
     <img src="/images/cigarette-butt.png" alt="" />
   </button>
 </div>
@@ -68,15 +77,16 @@
 <section class="shop" aria-labelledby="shop-heading">
   <h3 id="shop-heading">Shop</h3>
   @for (offer of shopOffers(); track offer.id) {
+    @if (offer.visible) { 
     <button
       class="pixel-button"
       type="button"
       [disabled]="money() < offer.cost"
       (click)="buyOffer(offer)"
-      [title]="offer.tooltip"
-    >
+      [title]="offer.tooltip">
       {{ offer.name }} - €{{ offer.cost }}
     </button>
+    }
   }
 </section>
 
