@@ -17,12 +17,18 @@
         (unlockLevel)="unlockLevel($event)"
       />
     } @else if (currentLevel() === 'level-2') {
-      <p>Level 2 ist freigeschaltet und wird bald spielbar.</p>
+      <app-level-2
+        [money]="money()"
+        (earnMoney)="addMoney($event)"
+        (purchaseRequested)="spendMoney($event)"
+        (unlockLevel)="unlockLevel($event)"
+      />
     } @else if (currentLevel() === 'level-3') {
       <app-level-3
         [money]="money()"
         (earnMoney)="addMoney($event)"
         (purchaseRequested)="spendMoney($event)"
+        (unlockLevel)="unlockLevel($event)"
       />
     }
     <router-outlet />

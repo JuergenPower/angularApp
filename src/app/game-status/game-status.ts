@@ -1,5 +1,5 @@
 import { Component, effect, input, output, signal } from '@angular/core';
-import type { GameLevel, GameLevelOption } from '../game-level';
+import type { GameLevel, GameLevelOption } from '../interfaces';
 
 @Component({
   imports: [],

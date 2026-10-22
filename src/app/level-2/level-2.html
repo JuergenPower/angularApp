@@ -1,0 +1,62 @@
+<h2>Level 2: Pfanddosen sammeln</h2>
+<p>Gesammelte Dosen: {{ canCount() }} / {{ canMaxCount() }}</p>
+<button
+  class="pixel-button"
+  type="button"
+  [disabled]="isBusy()"
+  (click)="redeemCans()"
+>
+  Pfand abholen
+</button>
+
+<div
+  class="meadow"
+  [style.height.px]="meadowHeight"
+  [style.max-width.px]="meadowMaxWidth"
+>
+  <img
+    class="meadow-background"
+    src="/images/meadow-normal.png"
+    alt=""
+  />
+  <button
+    type="button"
+    aria-label="Dose sammeln"
+    [disabled]="isBusy() || canCount() >= canMaxCount()"
+    [style.grid-row]="buttonPosition().row"
+    [style.grid-column]="buttonPosition().column"
+    (click)="collectCan()">
+    <img src="/images/can.png" alt="" />
+  </button>
+</div>
+
+<section class="shop" aria-labelledby="shop-heading">
+  <h3 id="shop-heading">Shop</h3>
+  @for (offer of shopOffers(); track offer.id) {
+    <button
+      class="pixel-button"
+      type="button"
+      [disabled]="money() < offer.cost"
+      (click)="buyOffer(offer)"
+      [title]="offer.tooltip"
+    >
+      {{ offer.name }} - €{{ offer.cost }}
+    </button>
+  }
+</section>
+
+@if (isBusy()) {
+  <p role="status">
+    @if (activeAction() === 'redeeming') {
+      Pfand wird abgeholt …
+    } @else {
+      Dose wird eingesammelt …
+    }
+  </p>
+  <div class="action-progress" aria-hidden="true">
+    <div
+      class="action-progress__fill"
+      [style.animation-duration.ms]="activeActionDurationMs()"
+    ></div>
+  </div>
+}

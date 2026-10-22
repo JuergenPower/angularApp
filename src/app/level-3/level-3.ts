@@ -17,6 +17,7 @@ interface ShopOffer {
 export class Level3 {
   readonly money = input.required<number>();
   readonly purchaseRequested = output<number>();
+  readonly unlockLevel = output<number>();
   protected readonly bottleCount = signal(0);
   protected readonly bottleMaxCount = signal(2);
   protected readonly isBusy = signal(false);          // Indicates whether an action is currently in progress

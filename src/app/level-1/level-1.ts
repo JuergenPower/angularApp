@@ -1,15 +1,7 @@
 import { Component, input, output, signal } from '@angular/core';
+import type { ShopOffer } from '../interfaces';
 
 type ActiveAction = 'collecting' | 'extracting' | 'rolling' | 'selling' | 'smoking';
-
-interface ShopOffer {
-  visible: () => boolean;
-  id: string;
-  name: string;
-  cost: number;
-  tooltip: string;
-  action: () => void;
-}
 
 @Component({
   imports: [],

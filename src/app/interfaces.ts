@@ -10,3 +10,12 @@ export const GAME_LEVELS: readonly GameLevelOption[] = [
   { value: 'level-2', label: 'Level 2' },
   { value: 'level-3', label: 'Level 3' },
 ];
+
+export interface ShopOffer {
+  visible: () => boolean;
+  id: string;
+  name: string;
+  cost: number;
+  tooltip: string;
+  action: () => void;
+}

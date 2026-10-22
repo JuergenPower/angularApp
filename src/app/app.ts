@@ -1,13 +1,14 @@
 import { Component, computed, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Level1 } from './level-1/level-1';
+import { Level2 } from './level-2/level-2';
 import { Level3 } from './level-3/level-3';
 import { GameStatus } from './game-status/game-status';
-import { GAME_LEVELS, type GameLevel } from './game-level';
+import { GAME_LEVELS, type GameLevel } from './interfaces';
 
 
 @Component({
-  imports: [RouterOutlet, Level1, Level3, GameStatus],
+  imports: [RouterOutlet, Level1, Level2, Level3, GameStatus],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
@@ -15,7 +16,7 @@ import { GAME_LEVELS, type GameLevel } from './game-level';
 export class App {
   protected readonly title = signal('angular-app');
   protected readonly money = signal(0);
-  protected readonly numberOfUnlockedLevels = signal(1);
+  protected readonly numberOfUnlockedLevels = signal(3);
   protected readonly unlockedLevels = computed(() =>
     GAME_LEVELS.slice(0, this.numberOfUnlockedLevels()),
   );
