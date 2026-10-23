@@ -29,7 +29,7 @@ const DEPOSIT_FIND_DETAILS: Record<DepositFindType,Pick<DepositFindButton, 'imag
 @Component({
   imports: [],
   selector: 'app-level-2',
-  styleUrl: '../shared/level-common.css',
+  styleUrls: ['../shared/level-common.css', './level-2.css'],
   templateUrl: './level-2.html',
 })
 export class Level2 {
@@ -38,15 +38,16 @@ export class Level2 {
   readonly earnMoney = output<number>();
   readonly unlockLevel = output<number>();
 
+  protected readonly devSellPriceMultiplier: number = 10;
   protected readonly glassBottleCount = signal(0);
   protected readonly glassBottleMax = signal(2);
-  protected readonly glassBottleDeposit: number = 0.1;
+  protected readonly glassBottleDeposit: number = this.devSellPriceMultiplier * 0.1;
   protected readonly canCount = signal(0);
   protected readonly canMax = signal(2);
-  protected readonly canDeposit: number = 0.15;
+  protected readonly canDeposit: number = this.devSellPriceMultiplier * 0.15;
   protected readonly plasticBottleCount = signal(0);
   protected readonly plasticBottleMax = signal(2);
-  protected readonly plasticBottleDeposit: number = 0.25;
+  protected readonly plasticBottleDeposit: number = this.devSellPriceMultiplier * 0.25;
   protected readonly depositFindTypes: readonly DepositFindType[] = [
     'glass-bottle',
     'can',
@@ -66,23 +67,231 @@ export class Level2 {
   protected readonly activeAction = signal<'collecting' | 'redeeming' | null>(null);
   protected readonly activeActionDurationMs = signal(0);
 
-  protected collectionDurationMs = 2000;
+  protected collectionDurationMs = 2500;
   protected redemptionDurationMs = 5000;
 
   protected readonly meadowHeight = 360;
   protected readonly meadowMaxWidth = 640;
 
+  // Level logic
+  protected canQuitDrinking = signal(false);
+  protected quitDrinking = signal(false);
+  protected numOfOptimizations = 0;
+  protected cansEnabled = signal(false);
+  protected plasticBottlesEnabled = signal(false);
+  protected shoppingCartEnabled = signal(false);
+  protected capBought = signal(false);
 
 
   protected readonly shopOffers = signal<ShopOffer[]>([
     {
-      visible: () => true,
-      id: 'can-magnet',
-      name: 'Dosenmagnet',
-      cost: 5,
-      tooltip: '0,5s schneller sammeln',
+      visible: () => this.canQuitDrinking(),
+      id: 'quit-drinking',
+      name: 'Idee: Mit dem Trinken aufhören',
+      cost: 0,
+      tooltip: 'Ermöglicht andere Möglichkeiten',
       action: () => {
+        this.quitDrinking.set(true);
+      },
+    },
+    // Optimization phase 1:
+    {
+      visible: () => this.quitDrinking(),
+      id: 'small-bag',
+      name: 'Kleine Tüte',
+      cost: 1,
+      tooltip: '+1 Tragekapazität',
+      action: () => {
+        this.numOfOptimizations++;
+        this.glassBottleMax.set(this.glassBottleMax() + 1);
+      },
+    },
+    {
+      visible: () => this.quitDrinking(),
+      id: 'left-shoe',
+      name: 'Gebrauchter linker Schuh',
+      cost: 1.5,
+      tooltip: '- 1s Pfandrückgabezeit',
+      action: () => {
+        this.numOfOptimizations++;
+        this.redemptionDurationMs -= 1000;
+      },
+    },
+    {
+      visible: () => this.quitDrinking(),
+      id: 'glove',
+      name: 'Gummihandschuh',
+      cost: 2,
+      tooltip: '- 0,5s Sammelzeit',
+      action: () => {
+        this.numOfOptimizations++;
         this.collectionDurationMs -= 500;
+      },
+    },
+    {
+      visible: () => this.quitDrinking(),
+      id: 'bottle-box',
+      name: 'Flaschenkiste',
+      cost: 1.5,
+      tooltip: '+1 Tragekapazität',
+      action: () => {
+        this.numOfOptimizations++;
+        this.glassBottleMax.set(this.glassBottleMax() + 1);
+      },
+    },
+    {
+      visible: () => this.numOfOptimizations >= 4,
+      id: 'idea-cans',
+      name: 'Idee: Auch Dosen sammeln',
+      cost: 0,
+      tooltip: 'Ermöglicht Dosensammeln',
+      action: () => {
+        this.cansEnabled.set(true);
+        this.depositFindProbabilities['can'] = 0.5;
+      },
+    },
+    // Optimization phase 2
+    {
+      visible: () => this.cansEnabled(),
+      id: 'net',
+      name: 'Tragenetz',
+      cost: 1,
+      tooltip: '+1 Dosen-Tragekapazität',
+      action: () => {
+        this.numOfOptimizations++;
+        this.canMax.set(this.canMax() + 1);
+      },
+    },
+    {
+      visible: () => this.cansEnabled(),
+      id: 'right-shoe',
+      name: 'Gebrauchter rechter Schuh',
+      cost: 1.5,
+      tooltip: '- 1s Pfandrückgabezeit',
+      action: () => {
+        this.numOfOptimizations++;
+        this.redemptionDurationMs -= 1000;
+      },
+    },
+    {
+      visible: () => this.cansEnabled(),
+      id: 'knee-pad',
+      name: 'Knieschoner',
+      cost: 2,
+      tooltip: '- 0,5 s Sammelzeit',
+      action: () => {
+        this.numOfOptimizations++;
+        this.collectionDurationMs -= 500;
+      },
+    },
+    {
+      visible: () => this.cansEnabled(),
+      id: 'new-route',
+      name: 'Neue Route',
+      cost: 2.5,
+      tooltip: 'Höhere Wahrscheinlichkeit für Dosen',
+      action: () => {
+        this.numOfOptimizations++;
+        this.depositFindProbabilities['can'] = 1;
+      },
+    },
+    {
+      visible: () => this.cansEnabled(),
+      id: 'can-bag',
+      name: 'Dosen-Sammelbehälter',
+      cost: 1.5,
+      tooltip: '+1 Dosen-Tragekapazität',
+      action: () => {
+        this.numOfOptimizations++;
+        this.canMax.set(this.canMax() + 1);
+      },
+    },
+    {
+      visible: () => this.numOfOptimizations >= 9,
+      id: 'idea-plastic-bottles',
+      name: 'Idee: Auch Plastikflaschen sammeln',
+      cost: 0,
+      tooltip: 'Ermöglicht Plastikflaschen',
+      action: () => {
+        this.plasticBottlesEnabled.set(true);
+        this.depositFindProbabilities['plastic-bottle'] = 1;
+      },
+    },
+    // Optimization phase 3
+    {
+      visible: () => this.plasticBottlesEnabled(),
+      id: 'cloth-bag',
+      name: 'Stoffbeutel',
+      cost: 2,
+      tooltip: '+1 Plastikflaschen-Tragekapazität',
+      action: () => {
+        this.numOfOptimizations++;
+        this.plasticBottleMax.set(this.plasticBottleMax() + 1);
+      },
+    },
+    {
+      visible: () => this.plasticBottlesEnabled(),
+      id: 'shoelace',
+      name: 'Schnürsenkel',
+      cost: 2.5,
+      tooltip: '- 1 s Pfandrückgabezeit',
+      action: () => {
+        this.numOfOptimizations++;
+        this.redemptionDurationMs -= 1000;
+      },
+    },
+    {
+      visible: () => this.plasticBottlesEnabled(),
+      id: 'grabber',
+      name: 'Greifzange',
+      cost: 3.5,
+      tooltip: '- 0,5 s Sammelzeit',
+      action: () => {
+        this.numOfOptimizations++;
+        this.collectionDurationMs -= 500;
+      },
+    },
+    {
+      visible: () => this.plasticBottlesEnabled(),
+      id: 'trash-bag',
+      name: 'Müllsack',
+      cost: 2.5,
+      tooltip: '+1 Plastikflaschen-Kapazität',
+      action: () => {
+        this.numOfOptimizations++;
+        this.plasticBottleMax.set(this.plasticBottleMax() + 1);
+      },
+    },
+    {
+      visible: () => this.plasticBottlesEnabled(),
+      id: 'optimize-route',
+      name: 'Sammelroute optimieren',
+      cost: 3,
+      tooltip: 'Mehr Plastikflaschen',
+      action: () => {
+        this.plasticBottlesEnabled.set(true);
+        this.numOfOptimizations++;
+        this.depositFindProbabilities['plastic-bottle'] = 2;
+      },
+    },
+    {
+      visible: () => this.numOfOptimizations >= 14,
+      id: 'shopping-cart',
+      name: 'Einkaufswagen',
+      cost: 5,
+      tooltip: 'Gemeinsame Pfandrückgabe',
+      action: () => {
+        this.shoppingCartEnabled.set(true);
+      },
+    },
+    {
+      visible: () => this.shoppingCartEnabled(),
+      id: 'posh-hat',
+      name: 'Schicke Mütze',
+      cost: 10,
+      tooltip: 'Gepflegteres Aussehen eröffnet neue Möglichkeiten',
+      action: () => {
+        this.capBought.set(true);
       },
     },
   ]);
@@ -221,6 +430,10 @@ export class Level2 {
     });
   }
 
+  protected hasDeposits(): boolean {
+    return this.glassBottleCount() > 0 || this.canCount() > 0 || this.plasticBottleCount() > 0;
+  }
+
   protected buyOffer(offer: ShopOffer): void {
     if (this.money() < offer.cost) {
       return;
@@ -254,5 +467,16 @@ export class Level2 {
         this.isBusy.set(false);
       }
     }, durationMs);
+  }
+
+  protected drinkBeer(): void {
+    this.glassBottleCount.update(c => c - 1);
+    this.canQuitDrinking.set(true);
+  }
+
+  protected unlockNextLevel(): void {
+    if (this.capBought()) {
+      this.unlockLevel.emit(3);
+    }
   }
 }

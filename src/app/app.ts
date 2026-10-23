@@ -16,11 +16,11 @@ import { GAME_LEVELS, type GameLevel } from './interfaces';
 export class App {
   protected readonly title = signal('angular-app');
   protected readonly money = signal(0);
-  protected readonly numberOfUnlockedLevels = signal(3);
+  protected readonly numberOfUnlockedLevels = signal(2);
   protected readonly unlockedLevels = computed(() =>
     GAME_LEVELS.slice(0, this.numberOfUnlockedLevels()),
   );
-  protected readonly currentLevel = signal<GameLevel>('level-1');
+  protected readonly currentLevel = signal<GameLevel>('level-2');
   private readonly cashRegisterSound = new Audio('/sounds/cash-register.mp3');
 
   protected addMoney(amount: number): void {

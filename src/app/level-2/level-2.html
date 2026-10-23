@@ -1,13 +1,78 @@
 <h2>Level 2: Pfandgut sammeln</h2>
-<p>Gesammelte Glasflaschen: {{ glassBottleCount() }} / {{ glassBottleMax() }}</p>
-<button
-  class="pixel-button"
-  type="button"
-  [disabled]="isBusy()"
-  (click)="redeemGlassBottles()"
->
-  Pfand abholen
-</button>
+@if (capBought()) {
+  <button class="pixel-button" type="button" (click)="unlockNextLevel()">
+    Level 3 freischalten
+  </button>
+}
+@if (!quitDrinking()) {
+  Bierflasche: {{ glassBottleCount() }} / {{ glassBottleMax() }}
+  <button
+    class="pixel-button"
+    type="button"
+    [disabled]="glassBottleCount() < 1"
+    (click)="drinkBeer()">
+    Bierrest austrinken
+  </button>
+}
+@else {
+  <table class="deposit-inventory" aria-label="Gesammeltes Pfandgut">
+    <tbody>
+      <tr>
+        <th scope="row">
+          Glasflaschen: {{ glassBottleCount() }} / {{ glassBottleMax() }}
+        </th>
+        <td>
+          <button
+            class="pixel-button"
+            type="button"
+            [disabled]="isBusy() || glassBottleCount() < 1"
+            (click)="redeemGlassBottles()">
+            Pfand abholen
+          </button>
+        </td>
+      </tr>
+      @if (cansEnabled()) {
+        <tr>
+          <th scope="row">Dosen: {{ canCount() }} / {{ canMax() }}</th>
+          <td>
+            <button
+              class="pixel-button"
+              type="button"
+              [disabled]="isBusy() || canCount() < 1"
+              (click)="redeemCans()">
+              Pfand abholen
+            </button>
+          </td>
+        </tr>
+      }
+      @if (plasticBottlesEnabled()) {
+        <tr>
+          <th scope="row">
+            Plastikflaschen: {{ plasticBottleCount() }} / {{ plasticBottleMax() }}
+          </th>
+          <td>
+            <button
+              class="pixel-button"
+              type="button"
+              [disabled]="isBusy() || plasticBottleCount() < 1"
+              (click)="redeemPlasticBottles()">
+              Pfand abholen
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+@if (shoppingCartEnabled()) {
+  <button
+    class="pixel-button"
+    type="button"
+    [disabled]="isBusy() || !hasDeposits()"
+    (click)="redeemAll()">
+    Pfand abholen
+  </button>
+}
 
 <div
   class="meadow"
@@ -33,15 +98,16 @@
 <section class="shop" aria-labelledby="shop-heading">
   <h3 id="shop-heading">Shop</h3>
   @for (offer of shopOffers(); track offer.id) {
-    <button
-      class="pixel-button"
-      type="button"
-      [disabled]="money() < offer.cost"
-      (click)="buyOffer(offer)"
-      [title]="offer.tooltip"
-    >
-      {{ offer.name }} - €{{ offer.cost }}
-    </button>
+    @if (offer.visible()) {
+      <button
+        class="pixel-button"
+        type="button"
+        [disabled]="money() < offer.cost"
+        (click)="buyOffer(offer)"
+        [title]="offer.tooltip">
+        {{ offer.name }} - €{{ offer.cost }}
+      </button>
+    }
   }
 </section>
 
