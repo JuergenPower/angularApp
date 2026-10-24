@@ -1,13 +1,47 @@
-<h2>Level 3: Pfandflaschen sammeln</h2>
-<p>Gesammelte Flaschen: {{ bottleCount() }} / {{ bottleMaxCount() }}</p>
-<button
-  class="pixel-button"
-  type="button"
-  [disabled]="isBusy()"
-  (click)="redeemBottles()"
+<h2>Level 3: Blumen pflücken</h2>
+
+<p>Geschicklichkeit: {{ currentLevel() }} / {{ maxLevel }}</p>
+<div
+  class="experience-bar"
+  role="progressbar"
+  aria-label="Erfahrung bis zum nächsten Level"
+  [attr.aria-valuenow]="currentExp()"
+  [attr.aria-valuemin]="0"
+  [attr.aria-valuemax]="requiredExpPerLevel"
 >
-  Pfand abholen
-</button>
+  <div
+    class="experience-bar__fill"
+    [style.width.%]="currentExp() / requiredExpPerLevel * 100"
+  ></div>
+</div>
+<table class="production-table" aria-label="Blumen und Buketts">
+  <tbody>
+    <tr>
+      <th scope="row">Blumen: {{ flowerCount() }} / {{ flowerMax() }}</th>
+      <td>
+        <button
+          class="pixel-button"
+          type="button"
+          [disabled]="isBusy() || flowerCount() < 3 || bukettCount() >= bukettMax()"
+          (click)="arrangeBouquet()">
+          Bukett arrangieren
+        </button>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">Buketts: {{ bukettCount() }} / {{ bukettMax() }}</th>
+      <td>
+        <button
+          class="pixel-button"
+          type="button"
+          [disabled]="isBusy() || bukettCount() < 1"
+          (click)="sellBuketts()">
+          Buketts verkaufen
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 <div
   class="meadow"
@@ -21,12 +55,12 @@
   />
   <button
     type="button"
-    aria-label="Flasche sammeln"
-    [disabled]="isBusy() || bottleCount() >= bottleMaxCount()"
+    aria-label="Blume pflücken"
+    [disabled]="isBusy() || flowerCount() >= flowerMax()"
     [style.grid-row]="buttonPosition().row"
     [style.grid-column]="buttonPosition().column"
-    (click)="collectBottle()">
-    <img src="/images/bottle.png" alt="" />
+    (click)="collectFlower()">
+    <img src="/images/flower.png" alt="" />
   </button>
 </div>
 
@@ -47,10 +81,12 @@
 
 @if (isBusy()) {
   <p role="status">
-    @if (activeAction() === 'redeeming') {
-      Pfand wird abgeholt …
-    } @else {
-      Flasche wird eingesammelt …
+    @if (activeAction() === 'collecting') {
+      Blume wird gesammelt …
+    } @else if (activeAction() === 'processing') {
+      Bukett wird hergestellt …
+    } @else if (activeAction() === 'selling') {
+      Bukett wird verkauft …
     }
   </p>
   <div class="action-progress" aria-hidden="true">

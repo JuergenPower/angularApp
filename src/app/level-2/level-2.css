@@ -1,6 +1,6 @@
 .deposit-inventory {
   border-collapse: collapse;
-  margin-bottom: 12px;
+  margin-block: 12px;
   max-width: 640px;
   width: 100%;
 }

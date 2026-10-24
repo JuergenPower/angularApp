@@ -19,11 +19,15 @@
         <td>
           <select
             aria-label="Level"
-            [value]="level()"
             (change)="changeLevel($event)"
           >
             @for (option of levelOptions(); track option.value) {
-              <option [value]="option.value">{{ option.label }}</option>
+              <option
+                [value]="option.value"
+                [selected]="option.value === level()"
+              >
+                {{ option.label }}
+              </option>
             }
           </select>
         </td>

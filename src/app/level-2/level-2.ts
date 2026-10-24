@@ -38,7 +38,7 @@ export class Level2 {
   readonly earnMoney = output<number>();
   readonly unlockLevel = output<number>();
 
-  protected readonly devSellPriceMultiplier: number = 10;
+  protected readonly devSellPriceMultiplier: number = 1;
   protected readonly glassBottleCount = signal(0);
   protected readonly glassBottleMax = signal(2);
   protected readonly glassBottleDeposit: number = this.devSellPriceMultiplier * 0.1;

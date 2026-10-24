@@ -1,0 +1,32 @@
+.experience-bar {
+  background-color: #d9d9d9;
+  border: 2px solid #774f17;
+  height: 18px;
+  margin-block: 8px 12px;
+  max-width: 640px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.experience-bar__fill {
+  background-color: #e1b85a;
+  height: 100%;
+  transition: width 200ms ease;
+}
+
+.production-table {
+  border-collapse: collapse;
+  margin-block: 12px;
+  max-width: 640px;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.production-table th,
+.production-table td {
+  border: 2px solid #774f17;
+  padding: 8px;
+  text-align: left;
+  vertical-align: middle;
+  width: 50%;
+}

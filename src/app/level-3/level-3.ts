@@ -1,54 +1,70 @@
-import { Component, input, output, signal } from '@angular/core';
-
-interface ShopOffer {
-  id: string;
-  name: string;
-  cost: number;
-  tooltip: string;
-  action: () => void;
-}
+import { Component, input, output, signal, computed } from '@angular/core';
+import type { ShopOffer } from '../interfaces';
 
 @Component({
   imports: [],
   selector: 'app-level-3',
-  styleUrl: '../shared/level-common.css',
+  styleUrls: ['../shared/level-common.css', './level-3.css'],
   templateUrl: './level-3.html',
 })
 export class Level3 {
   readonly money = input.required<number>();
   readonly purchaseRequested = output<number>();
-  readonly unlockLevel = output<number>();
-  protected readonly bottleCount = signal(0);
-  protected readonly bottleMaxCount = signal(2);
-  protected readonly isBusy = signal(false);          // Indicates whether an action is currently in progress
-  protected readonly activeAction = signal<'collecting' | 'redeeming' | null>(null);
-  protected readonly activeActionDurationMs = signal(0);
-  protected bottleCollectionDurationMs = 2000;
-  protected redemptionDurationMs = 5000;
   readonly earnMoney = output<number>();
+  readonly unlockLevel = output<number>();
+
+
+  protected readonly flowerCount = signal(0);
+  protected readonly flowerMax = signal(3);
+  protected readonly bukettCount = signal(0);
+  protected readonly bukettMax = signal(2);
+
+  protected readonly devMutiplicator: number = 10;
+  protected  bukettPrice: number = this.devMutiplicator * 2;
+  protected readonly expPerTry: number = this.devMutiplicator * 13;
+  protected readonly requiredExpPerLevel: number = 100;
+  protected readonly maxLevel: number = 10;
+  protected readonly currentExp = signal(0);
+  protected readonly currentLevel = signal(1);
+  protected readonly levelUpExp = signal(0);
+  protected readonly probabilityToMakeBukett = computed(() => 0.1 * this.currentLevel());
+
+
+  protected readonly isBusy = signal(false); // Indicates whether an action is currently in progress
+  protected readonly activeAction = signal<'collecting' | 'processing' | 'selling' | null>(null);
+  protected readonly activeActionDurationMs = signal(0);
+  protected flowerCollectionDurationMs = 2000;
+  protected processingDurationMs = 4000;
+  protected bukettSellingDurationMs = 4000;
+
   protected readonly meadowHeight = 360;
   protected readonly meadowMaxWidth = 640;
   protected readonly buttonPosition = signal({ row: 5, column: 5 });
+
   protected readonly shopOffers = signal<ShopOffer[]>([
-    { id: 'greifzange', name: 'Greifzange', cost: 10, tooltip: '50% schnelleres Flaschen sammeln', action: () => {this.bottleCollectionDurationMs /= 2} },
-    { id: 'tasche', name: 'Tasche', cost: 5, tooltip: '+100% Flaschenkapazität', action: () => {this.bottleMaxCount.set(this.bottleMaxCount() * 2)} },
-    { id: 'tretroller', name: 'Tretroller', cost: 30, tooltip: '50% schnelleres Pfand abholen', action: () => {this.redemptionDurationMs /= 2} },
-    { id: 'schuhe', name: 'Schuhe', cost: 20, tooltip: '50% schnelleres Pfand abholen', action: () => {this.redemptionDurationMs /= 2} },
-    { id: 'handschuhe', name: 'Handschuhe', cost: 5, tooltip: '50% schnelleres Flaschen sammeln', action: () => {this.bottleCollectionDurationMs /= 2} },
-    { id: 'rucksack', name: 'Rucksack', cost: 15, tooltip: '+100% Flaschenkapazität', action: () => {this.bottleMaxCount.set(this.bottleMaxCount() * 2)} },
+    {
+      visible: () => true,
+      id: 'quit-drinking',
+      name: 'Idee: Mit dem Trinken aufhören',
+      cost: 0,
+      tooltip: 'Ermöglicht andere Möglichkeiten',
+      action: () => {
+        
+      },
+    },
   ]);
 
-  protected collectBottle(): void {
-    if (this.bottleCount() >= this.bottleMaxCount()) {
+  protected collectFlower(): void {
+    if (this.flowerCount() >= this.flowerMax()) {
       return;
     }
 
     this.runTimedAction(
-      this.bottleCollectionDurationMs,
+      this.flowerCollectionDurationMs,
       'collecting',
       () => {
-        this.bottleCount.update(count =>
-          Math.min(count + 1, this.bottleMaxCount()),
+        this.flowerCount.update(count =>
+          Math.min(count + 1, this.flowerMax()),
         );
 
         const currentPosition = this.buttonPosition();
@@ -69,20 +85,62 @@ export class Level3 {
     );
   }
 
-  protected redeemBottles(): void {
-    const amountEarned = this.bottleCount() * 2;
+  protected arrangeBouquet(): void {
+    if (
+      this.isBusy() ||
+      this.flowerCount() < 3 ||
+      this.bukettCount() >= this.bukettMax()
+    ) {
+      return;
+    }
 
-    this.runTimedAction(this.redemptionDurationMs, 'redeeming', () => {
-      this.bottleCount.set(0);
+    this.runTimedAction(this.processingDurationMs, 'processing', () => {
+      this.flowerCount.update(count => count - 3);
+      this.earnExperience(this.expPerTry);
+      if (Math.random() < this.probabilityToMakeBukett()) {
+        this.bukettCount.update(count =>
+          Math.min(count + 1, this.bukettMax()),
+        );
+      }
+    });
+  }
+
+  protected sellBuketts(): void {
+    const amountEarned = this.bukettCount() * this.bukettPrice;
+
+    this.runTimedAction(this.bukettSellingDurationMs, 'selling', () => {
+      this.bukettCount.set(0);
       this.earnMoney.emit(amountEarned);
     });
+  }
+
+  private earnExperience(amount: number): void {
+    if (this.currentLevel() >= this.maxLevel) {
+      this.currentExp.set(0);
+      return;
+    }
+
+    this.currentExp.update(experience => experience + amount);
+
+    while (
+      this.currentExp() >= this.requiredExpPerLevel &&
+      this.currentLevel() < this.maxLevel
+    ) {
+      this.currentExp.update(
+        experience => experience - this.requiredExpPerLevel,
+      );
+      this.currentLevel.update(level => level + 1);
+    }
+
+    if (this.currentLevel() >= this.maxLevel) {
+      this.currentExp.set(0);
+    }
   }
 
   protected buyOffer(offer: ShopOffer): void {
     if (this.money() < offer.cost) {
       return;
     }
-
     this.shopOffers.update(offers =>
       offers.filter(currentOffer => currentOffer.id !== offer.id),
     );
@@ -92,7 +150,7 @@ export class Level3 {
 
   private runTimedAction(
     durationMs: number,
-    action: 'collecting' | 'redeeming',
+    action: 'collecting' | 'processing' | 'selling',
     onComplete: () => void,
   ): void {
     if (this.isBusy()) {
