@@ -1,10 +1,15 @@
 <h2>Level 3: Blumen pflücken</h2>
 
-<p>Geschicklichkeit: {{ currentLevel() }} / {{ maxLevel }}</p>
+<p
+  [title]="'Wahrscheinlichkeit erfolgreich ein Bukett zu arrangieren: ' + probabilityToMakeBukettPercentage() + ' %'"
+>
+  Geschicklichkeitsgrad: {{ currentLevel() }} / {{ maxLevel }}
+</p>
 <div
   class="experience-bar"
   role="progressbar"
   aria-label="Erfahrung bis zum nächsten Level"
+  [title]="'Erfahrung: ' + currentExp() + '/' + requiredExpPerLevel"
   [attr.aria-valuenow]="currentExp()"
   [attr.aria-valuemin]="0"
   [attr.aria-valuemax]="requiredExpPerLevel"

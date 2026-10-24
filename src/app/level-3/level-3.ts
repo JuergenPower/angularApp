@@ -19,15 +19,22 @@ export class Level3 {
   protected readonly bukettCount = signal(0);
   protected readonly bukettMax = signal(2);
 
+  private readonly failSound = new Audio('/sounds/fail.mp3');
+  private readonly successSound = new Audio('/sounds/success.mp3');
+  private readonly levelUpSound = new Audio('/sounds/level-up.mp3');
+
   protected readonly devMutiplicator: number = 10;
   protected  bukettPrice: number = this.devMutiplicator * 2;
-  protected readonly expPerTry: number = this.devMutiplicator * 13;
+  protected readonly expPerTry: number = this.devMutiplicator * 3;
   protected readonly requiredExpPerLevel: number = 100;
   protected readonly maxLevel: number = 10;
   protected readonly currentExp = signal(0);
   protected readonly currentLevel = signal(1);
   protected readonly levelUpExp = signal(0);
   protected readonly probabilityToMakeBukett = computed(() => 0.1 * this.currentLevel());
+  protected readonly probabilityToMakeBukettPercentage = computed(() =>
+    Math.round(this.probabilityToMakeBukett() * 100),
+  );
 
 
   protected readonly isBusy = signal(false); // Indicates whether an action is currently in progress
@@ -96,11 +103,24 @@ export class Level3 {
 
     this.runTimedAction(this.processingDurationMs, 'processing', () => {
       this.flowerCount.update(count => count - 3);
-      this.earnExperience(this.expPerTry);
+      const leveledUp = this.earnExperience(this.expPerTry);
       if (Math.random() < this.probabilityToMakeBukett()) {
         this.bukettCount.update(count =>
           Math.min(count + 1, this.bukettMax()),
         );
+        if (!leveledUp){
+          this.successSound.currentTime = 0;
+          this.successSound.play().catch((error: unknown) => {
+            console.error('Could not play the success sound.', error);
+          });
+        }
+      }
+      else if (!leveledUp)
+      {
+        this.failSound.currentTime = 0;
+        this.failSound.play().catch((error: unknown) => {
+          console.error('Could not play the fail sound.', error);
+        });
       }
     });
   }
@@ -114,12 +134,13 @@ export class Level3 {
     });
   }
 
-  private earnExperience(amount: number): void {
+  private earnExperience(amount: number): boolean {
+
+    let levelUp = false;
     if (this.currentLevel() >= this.maxLevel) {
       this.currentExp.set(0);
-      return;
+      return levelUp;
     }
-
     this.currentExp.update(experience => experience + amount);
 
     while (
@@ -130,11 +151,19 @@ export class Level3 {
         experience => experience - this.requiredExpPerLevel,
       );
       this.currentLevel.update(level => level + 1);
+      levelUp = true;
     }
 
     if (this.currentLevel() >= this.maxLevel) {
       this.currentExp.set(0);
     }
+    if (levelUp){
+      this.levelUpSound.currentTime = 0;
+      this.levelUpSound.play().catch((error: unknown) => {
+        console.error('Could not play the level up sound.', error);
+      });
+    }
+    return levelUp;
   }
 
   protected buyOffer(offer: ShopOffer): void {
