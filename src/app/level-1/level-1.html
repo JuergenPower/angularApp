@@ -85,8 +85,8 @@
     type="button"
     aria-label="Stummel sammeln"
     [disabled]="isBusy() || buttCount() >= buttMaxCount()"
-    [style.grid-row]="buttonPosition().row"
-    [style.grid-column]="buttonPosition().column"
+    [style.grid-row]="buttonPosition().row + 1"
+    [style.grid-column]="buttonPosition().column + 1"
     (click)="collectButt()">
     <img src="/images/cigarette-butt.png" alt="" />
   </button>

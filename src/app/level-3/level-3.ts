@@ -1,4 +1,4 @@
-import { Component, input, output, signal, computed } from '@angular/core';
+import { Component, effect, input, output, signal, computed } from '@angular/core';
 import type { ShopOffer } from '../interfaces';
 
 @Component({
@@ -16,8 +16,10 @@ export class Level3 {
 
   protected readonly flowerCount = signal(0);
   protected readonly flowerMax = signal(3);
-  protected readonly bukettCount = signal(0);
-  protected readonly bukettMax = signal(2);
+  protected readonly bouquetCount = signal(0);
+  protected readonly bouquetMax = signal(2);
+  protected readonly currentBouquetDemand = signal(0);
+  protected readonly maxBouquetDemand = signal(0);
 
   private readonly failSound = new Audio('/sounds/fail.mp3');
   private readonly successSound = new Audio('/sounds/success.mp3');
@@ -25,7 +27,7 @@ export class Level3 {
 
   protected readonly devMutiplicator: number = 10;
   protected  bukettPrice: number = this.devMutiplicator * 2;
-  protected readonly expPerTry: number = this.devMutiplicator * 3;
+  protected readonly expPerTry: number = this.devMutiplicator * 7;
   protected readonly requiredExpPerLevel: number = 100;
   protected readonly maxLevel: number = 10;
   protected readonly currentExp = signal(0);
@@ -43,20 +45,64 @@ export class Level3 {
   protected flowerCollectionDurationMs = 2000;
   protected processingDurationMs = 4000;
   protected bukettSellingDurationMs = 4000;
+  protected bouquetDemandDurationMs = 60000;
+  protected readonly bouquetDemandProgress = signal(0);
+
+  constructor() {
+    effect(onCleanup => {
+      const maxDemand = this.maxBouquetDemand();
+      const currentDemand = this.currentBouquetDemand();
+
+      if (maxDemand <= currentDemand) {
+        this.bouquetDemandProgress.set(0);
+        return;
+      }
+
+      const durationMs = Math.max(1, this.bouquetDemandDurationMs);
+      const startedAt = performance.now();
+      const interval = setInterval(() => {
+        const elapsedMs = performance.now() - startedAt;
+        const progress = Math.min((elapsedMs / durationMs) * 100, 100);
+        this.bouquetDemandProgress.set(progress);
+
+        if (progress >= 100) {
+          clearInterval(interval);
+          this.bouquetDemandProgress.set(0);
+          this.currentBouquetDemand.update(demand =>
+            Math.min(demand + 1, this.maxBouquetDemand()),
+          );
+        }
+      }, 50);
+
+      onCleanup(() => clearInterval(interval));
+    });
+  }
 
   protected readonly meadowHeight = 360;
   protected readonly meadowMaxWidth = 640;
   protected readonly buttonPosition = signal({ row: 5, column: 5 });
 
+  protected readonly hadIdeaToSellBouquet = signal(false);
+
   protected readonly shopOffers = signal<ShopOffer[]>([
     {
-      visible: () => true,
-      id: 'quit-drinking',
-      name: 'Idee: Mit dem Trinken aufhören',
+      visible: () => this.flowerCount() >= 3,
+      id: 'idea-bouquet',
+      name: 'Idee: Bukett arrangieren',
       cost: 0,
-      tooltip: 'Ermöglicht andere Möglichkeiten',
+      tooltip: 'Just try it!',
       action: () => {
-        
+        this.hadIdeaToSellBouquet.set(true);
+      },
+    },
+    {
+      visible: () => this.bouquetCount() > 0,
+      id: 'sell-sign',
+      name: '"Zu verkaufen Pappschild"',
+      cost: 0,
+      tooltip: 'Sollte Nachfrage nach Buketts erzeugen',
+      action: () => {
+        this.maxBouquetDemand.set(1);
       },
     },
   ]);
@@ -96,7 +142,7 @@ export class Level3 {
     if (
       this.isBusy() ||
       this.flowerCount() < 3 ||
-      this.bukettCount() >= this.bukettMax()
+      this.bouquetCount() >= this.bouquetMax()
     ) {
       return;
     }
@@ -105,8 +151,8 @@ export class Level3 {
       this.flowerCount.update(count => count - 3);
       const leveledUp = this.earnExperience(this.expPerTry);
       if (Math.random() < this.probabilityToMakeBukett()) {
-        this.bukettCount.update(count =>
-          Math.min(count + 1, this.bukettMax()),
+        this.bouquetCount.update(count =>
+          Math.min(count + 1, this.bouquetMax()),
         );
         if (!leveledUp){
           this.successSound.currentTime = 0;
@@ -114,6 +160,8 @@ export class Level3 {
             console.error('Could not play the success sound.', error);
           });
         }
+        if (!this.hadIdeaToSellBouquet())
+          this.hadIdeaToSellBouquet.set(true);
       }
       else if (!leveledUp)
       {
@@ -126,10 +174,10 @@ export class Level3 {
   }
 
   protected sellBuketts(): void {
-    const amountEarned = this.bukettCount() * this.bukettPrice;
-
+    const numBouquetsToSell = Math.min(this.bouquetCount(), this.currentBouquetDemand());
+    const amountEarned = numBouquetsToSell * this.bukettPrice;
     this.runTimedAction(this.bukettSellingDurationMs, 'selling', () => {
-      this.bukettCount.set(0);
+      this.bouquetCount.set(this.bouquetCount() - numBouquetsToSell);
       this.earnMoney.emit(amountEarned);
     });
   }

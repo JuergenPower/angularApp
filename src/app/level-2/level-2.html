@@ -88,8 +88,8 @@
     type="button"
     [attr.aria-label]="'Sammle ' + depositFindButton().label"
     [disabled]="isBusy() || isFindAtCapacity(depositFindButton().type)"
-    [style.grid-row]="depositFindButton().buttonPosition.row"
-    [style.grid-column]="depositFindButton().buttonPosition.column"
+    [style.grid-row]="depositFindButton().buttonPosition.row + 1"
+    [style.grid-column]="depositFindButton().buttonPosition.column + 1"
     (click)="collect()">
     <img [src]="depositFindButton().imageSrc" alt="" />
   </button>
