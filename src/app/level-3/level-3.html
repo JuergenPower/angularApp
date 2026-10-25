@@ -1,8 +1,8 @@
 <h2>Level 3: Blumen pflücken</h2>
-@if (hadIdeaToSellBouquet()) {
+@if (maxLevel() > 1) {
   <p
     [title]="'Wahrscheinlichkeit erfolgreich ein Bukett zu arrangieren: ' + probabilityToMakeBukettPercentage() + ' %'">
-    Arrangier Skill: {{ currentLevel() }} / {{ maxLevel }}
+    Arrangier Skill: {{ currentLevel() }} / {{ maxLevel() }}
   </p>
   <div
     class="experience-bar"
@@ -18,7 +18,11 @@
     </div>
   </div>
 }
-
+@if (thingBought()) {
+  <button class="pixel-button" type="button" (click)="unlockNextLevel()">
+    Level 4 freischalten
+  </button>
+}
 <table class="production-table" aria-label="Blumen und Buketts">
   <tbody>
     <tr>
@@ -28,6 +32,7 @@
             class="pixel-button"
             type="button"
             [disabled]="isBusy() || flowerCount() < 3 || bouquetCount() >= bouquetMax()"
+            [title]="'Wahrscheinlichkeit erfolgreich ein Bukett zu arrangieren: ' + probabilityToMakeBukettPercentage() + ' %'"
             (click)="arrangeBouquet()">
             Arrangieren
           </button>
