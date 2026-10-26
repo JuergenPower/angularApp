@@ -22,7 +22,7 @@ export class Level4 {
 
   protected readonly harvestedCount = signal(0);
   protected readonly plots = signal<Plot[]>(
-    Array.from({ length: 27 }, (_, id) => ({
+    Array.from({ length: 3 }, (_, id) => ({
       id,
       state: 'empty',
       stateStartedAt: Date.now(),
@@ -30,7 +30,7 @@ export class Level4 {
   );
 
   private readonly destroyRef = inject(DestroyRef);
-  private readonly growthStageDurationMs = 10000;
+  private readonly growthStageDurationMs = 4000;
 
   constructor() {
     const intervalId = setInterval(() => this.advanceGrowth(Date.now()), 250);
