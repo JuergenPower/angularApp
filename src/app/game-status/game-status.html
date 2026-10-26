@@ -19,8 +19,7 @@
         <td>
           <select
             aria-label="Level"
-            (change)="changeLevel($event)"
-          >
+            (change)="changeLevel($event)">
             @for (option of levelOptions(); track option.value) {
               <option
                 [value]="option.value"

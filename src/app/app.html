@@ -30,6 +30,13 @@
         (purchaseRequested)="spendMoney($event)"
         (unlockLevel)="unlockLevel($event)"
       />
+    } @else if (currentLevel() === 'level-4') {
+      <app-level-4
+        [money]="money()"
+        (earnMoney)="addMoney($event)"
+        (purchaseRequested)="spendMoney($event)"
+        (unlockLevel)="unlockLevel($event)"
+      />
     }
     <router-outlet />
   </main>

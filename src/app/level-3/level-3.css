@@ -11,7 +11,7 @@
 .experience-bar__fill {
   background-color: #c15ae1;
   height: 100%;
-  transition: width 200ms ease;
+  transition: width 400ms ease;
 }
 
 .bouquet-demand {

@@ -1,0 +1,26 @@
+<h1>Level 4: Landwirtschaft</h1>
+<p>Geerntet: {{ harvestedCount() }}</p>
+
+<div class="farm-scene">
+  <img class="farm-scene__background" src="/images/field-background.png" alt="" />
+  <section class="farm-grid" aria-label="Anbauflächen">
+    @for (plot of plots(); track plot.id) {
+      <button
+        type="button"
+        class="farm-plot"
+        [class]="'farm-plot farm-plot--' + plot.state"
+        [attr.aria-label]="'Beet ' + (plot.id + 1) + ': ' + stateLabel(plot.state)"
+        (click)="handlePlotClick(plot.id)">
+        @if (plot.state !== 'empty') {
+          <img
+            class="farm-plot__image"
+            [src]="'/images/' + plot.state + '.png'"
+            alt=""
+            width="80"
+            height="80"
+          />
+        }
+      </button>
+    }
+  </section>
+</div>

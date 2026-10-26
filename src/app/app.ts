@@ -3,12 +3,13 @@ import { RouterOutlet } from '@angular/router';
 import { Level1 } from './level-1/level-1';
 import { Level2 } from './level-2/level-2';
 import { Level3 } from './level-3/level-3';
+import { Level4 } from './level-4/level-4';
 import { GameStatus } from './game-status/game-status';
 import { GAME_LEVELS, type GameLevel } from './interfaces';
 
 
 @Component({
-  imports: [RouterOutlet, Level1, Level2, Level3, GameStatus],
+  imports: [RouterOutlet, Level1, Level2, Level3, Level4, GameStatus],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
@@ -16,11 +17,11 @@ import { GAME_LEVELS, type GameLevel } from './interfaces';
 export class App {
   protected readonly title = signal('angular-app');
   protected readonly money = signal(0);
-  protected readonly numberOfUnlockedLevels = signal(3);
+  protected readonly numberOfUnlockedLevels = signal(4);
   protected readonly unlockedLevels = computed(() =>
     GAME_LEVELS.slice(0, this.numberOfUnlockedLevels()),
   );
-  protected readonly currentLevel = signal<GameLevel>('level-3');
+  protected readonly currentLevel = signal<GameLevel>('level-4');
   private readonly cashRegisterSound = new Audio('/sounds/cash-register.mp3');
 
   protected addMoney(amount: number): void {

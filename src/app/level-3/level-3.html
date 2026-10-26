@@ -10,7 +10,7 @@
     aria-label="Erfahrung bis zum nächsten Level"
     [title]="'Erfahrung: ' + currentExp() + '/' + requiredExpPerLevel"
     [attr.aria-valuenow]="currentExp()"
-    [attr.aria-valuemin]="0"
+    aria-valuemin="0"
     [attr.aria-valuemax]="requiredExpPerLevel">
     <div
       class="experience-bar__fill"
