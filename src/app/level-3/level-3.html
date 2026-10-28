@@ -26,7 +26,7 @@
 <table class="production-table" aria-label="Blumen und Buketts">
   <tbody>
     <tr>
-      <td scope="row"><img src="/images/flower.png" alt="" /> {{ flowerCount() }} / {{ flowerMax() }}
+      <td scope="row"><img src="images/flower.png" alt="" /> {{ flowerCount() }} / {{ flowerMax() }}
         @if (hadIdeaToSellBouquet()) {
           <button
             class="pixel-button"
@@ -40,7 +40,7 @@
       </td>
     @if (hadIdeaToSellBouquet()) {
         <td>
-          <img src="/images/flower-bouquet.png" alt="" /> {{ bouquetCount() }} / {{ bouquetMax() }}
+          <img src="images/flower-bouquet.png" alt="" /> {{ bouquetCount() }} / {{ bouquetMax() }}
           <button
             class="pixel-button"
             type="button"
@@ -78,7 +78,7 @@
   [style.max-width.px]="meadowMaxWidth">
   <img
     class="meadow-background"
-    src="/images/meadow-nice.png"
+    src="images/meadow-nice.png"
     alt=""
   />
   <button
@@ -88,7 +88,7 @@
     [style.grid-row]="buttonPosition().row + 1"
     [style.grid-column]="buttonPosition().column + 1"
     (click)="collectFlower()">
-    <img src="/images/flower.png" alt="" />
+    <img src="images/flower.png" alt="" />
   </button>
 </div>
 

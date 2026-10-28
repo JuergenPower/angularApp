@@ -13,15 +13,15 @@ interface DepositFindButton {
 const DEPOSIT_FIND_DETAILS: Record<DepositFindType,Pick<DepositFindButton, 'imageSrc' | 'label'>> = 
   {
   'glass-bottle': {
-    imageSrc: '/images/glass-bottle.png',
+    imageSrc: 'images/glass-bottle.png',
     label: 'Glasflasche',
   },
   can: {
-    imageSrc: '/images/can.png',
+    imageSrc: 'images/can.png',
     label: 'Dose',
   },
   'plastic-bottle': {
-    imageSrc: '/images/plastic-bottle.png',
+    imageSrc: 'images/plastic-bottle.png',
     label: 'Plastikflasche',
   },
 };

@@ -22,7 +22,7 @@ export class App {
     GAME_LEVELS.slice(0, this.numberOfUnlockedLevels()),
   );
   protected readonly currentLevel = signal<GameLevel>('level-4');
-  private readonly cashRegisterSound = new Audio('/sounds/cash-register.mp3');
+  private readonly cashRegisterSound = new Audio('sounds/cash-register.mp3');
 
   protected addMoney(amount: number): void {
     this.money.update(currentMoney => this.roundMoney(currentMoney + amount));

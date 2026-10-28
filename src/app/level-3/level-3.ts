@@ -20,10 +20,10 @@ export class Level3 {
   protected readonly currentBouquetDemand = signal(0);
   protected readonly maxBouquetDemand = signal(0);
 
-  private readonly failSound = new Audio('/sounds/fail.mp3');
-  private readonly successSound = new Audio('/sounds/success.mp3');
-  private readonly levelUpSound = new Audio('/sounds/level-up.mp3');
-  private readonly pickFlowerSound = new Audio('/sounds/pick-flower.mp3');
+  private readonly failSound = new Audio('sounds/fail.mp3');
+  private readonly successSound = new Audio('sounds/success.mp3');
+  private readonly levelUpSound = new Audio('sounds/level-up.mp3');
+  private readonly pickFlowerSound = new Audio('sounds/pick-flower.mp3');
 
   protected readonly devMutiplicator: number = 1;
   protected  bukettPrice: number = this.devMutiplicator * 2;
